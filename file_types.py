@@ -26,7 +26,7 @@ class GenericFile():
 		'''Writes contents to the file at self.path'''
 		pass
 	
-	def convert(self, target_type):
+	def convert(self, target_type, target_path):
 		'''Return a file object of target_type with this file's contents'''
 		pass
 		
@@ -43,5 +43,20 @@ class ExcelFile(GenericFile):
 class TxtFile(GenericFile):
 	pass
 
-class PDFFIle(GenericFile):
+class CsvFile(GenericFile):
 	pass
+
+class PdfFile(GenericFile):
+	pass
+
+class JsonFile(GenericFile):
+	pass
+
+# Dictionary for file types
+fileTypes = {
+	"txt": TxtFile,
+	"csv": CsvFile,
+	"xlsx": ExcelFile,
+	"pdf": PdfFile,
+	"json": JsonFile
+}
