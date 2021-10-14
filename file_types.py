@@ -1,4 +1,6 @@
 import os
+import pdfrw
+
 
 ### Internal data types
 
@@ -41,13 +43,16 @@ class GenericFile():
 	
 	def convert(self, target_type, target_path):
 		'''Return a file object of target_type with this file's contents'''
-		# strip old extension if necessary
-		if self.extension:
-			path = self.path.split('.')[:-1]
+		if target_path:
+			path = target_path
 		else:
-			path = self.path
-		# add new extension
-		path = '.'.join((path,target_type))
+			# strip old extension if necessary
+			if self.extension:
+				path = '.'.join(self.path.split('.')[:-1])
+			else:
+				path = self.path
+			# add new extension
+			path = '.'.join((path,target_type))
 		# create new file object and return it
 		new_file = fileTypes[target_type](path)
 		new_file.contents = self.contents
@@ -71,10 +76,57 @@ class TxtFile(GenericFile):
 	pass
 
 class CsvFile(GenericFile):
-	pass
+	def write(self):
+		f = open(self.path, 'w')
+		ret = ''
+		for key, value in self.contents.items():
+			ret += '"%s","%s"\n' % (key, value)
+		f.write(ret)
+		f.close()
 
 class PdfFile(GenericFile):
-	pass
+	def read(self):
+		# flow for reading pdfs from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html
+		# store the entire pdf in base_data
+		self.data = pdfrw.PdfReader(self.path)
+		self.contents = {}
+		# iterate over pages
+		for page in self.data.pages:
+			annots = page['/Annots']
+			# then over annotations on that page
+			for annot in annots:
+				# check that we're in a widget with a field key
+				if annot['/Subtype'] == '/Widget':
+					if annot['/T']:
+						print(annot)
+						key = annot['/T'][1:-1]
+						val = ''
+						# read the field value, if any
+						if annot['/AS']:
+							if annot['/AS'] == '/Yes':
+								val = True
+							if annot['/AS'] == '/Off':
+								val = False
+						elif annot['/V']:
+							val = annot['/V'][1:-1]
+						self.contents[key] = val
+						print('%s,%s' % (key, val))
+				# ugly handling of edge cases in case a field is embedded entirely within the parent value
+				if annot['/Parent']:
+					print(annot['/Parent'])
+					if annot['/Parent']['/T']:
+						key = annot['/Parent']['/T'][1:-1]
+						val = ''
+						# read the field value, if any
+						if annot['/AS']:
+							if annot['/AS'] == '/Yes':
+								val = True
+							if annot['/AS'] == '/Off':
+								val = False
+						elif annot['/V']:
+							val = annot['/V'][1:-1]
+						self.contents[key] = val
+						print('%s,%s' % (key, val))
 
 class JsonFile(GenericFile):
 	pass
