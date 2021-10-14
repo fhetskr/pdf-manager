@@ -39,7 +39,7 @@ class GenericFile():
 		'''Writes contents to the file at self.path'''
 		pass
 	
-	def convert(self, target_type):
+	def convert(self, target_type, target_path):
 		'''Return a file object of target_type with this file's contents'''
 		# strip old extension if necessary
 		if self.extension:
