@@ -4,14 +4,17 @@ import pdfrw
 
 ### Internal data types
 
+
 class OrderedDictionary():
 	# NB: I'm not sure we actually need to implement this -Peter
 	# Edit: nvm I think we probably will have to
 	pass
 
+
 class FileError(Exception):
 	'''Exception for invalid files'''
 	pass
+
 
 # A placeholder file type
 class GenericFile():
@@ -65,15 +68,18 @@ class GenericFile():
 	def delete(self):
 		'''Deletes the file at self.path from the filesystem, but retains contents'''
 		os.remove(self.path)
-				
+
+
 ### Actual file types
-# TODO: implement these
+#TODO: Excel, plaintext, json
 
 class ExcelFile(GenericFile):
 	pass
 
+
 class TxtFile(GenericFile):
 	pass
+
 
 class CsvFile(GenericFile):
 	def read(self):
@@ -90,7 +96,7 @@ class CsvFile(GenericFile):
 			else:
 				data = line.split(',')
 			if len(data) > 2:
-				raise IOError('Input CSVs must have exactly two columns.')
+				raise FileError('Input CSVs must have exactly two columns.')
 			if quotes:
 				# trim any remaining quote marks
 				self.contents[data[0][1:]] = data[1][:-2]
@@ -106,6 +112,7 @@ class CsvFile(GenericFile):
 			ret += '"%s","%s"\n' % (key, value)
 		f.write(ret)
 		f.close()
+
 
 class PdfFile(GenericFile):
 	def read(self):
@@ -173,8 +180,6 @@ class PdfFile(GenericFile):
 		self.data.Root.AcroForm.update(pdfrw.PdfDict(NeedAppearances=pdfrw.PdfObject('true')))
 		# and finally actually write
 		pdfrw.PdfWriter().write(self.path, self.data)
-
-
 
 
 class JsonFile(GenericFile):
