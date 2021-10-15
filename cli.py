@@ -3,6 +3,8 @@ import sys
 from file_types import *
 
 def main():
+	'''Entry point to the program'''
+	'''By Matthew'''
 	parser = argparse.ArgumentParser(description='Handle data in fillable PDFs.')
 	args = sys.argv[1:]
 	cmd = args[0]

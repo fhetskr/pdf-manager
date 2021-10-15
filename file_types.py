@@ -21,6 +21,7 @@ class GenericFile():
 	
 	def __init__(self, path):
 		'''Generic constructor for file types'''
+		'''By Peter'''
 		# save path to self.path
 		self.path = path
 		
@@ -46,6 +47,7 @@ class GenericFile():
 	
 	def convert(self, target_type, target_path):
 		'''Return a file object of target_type with this file's contents'''
+		'''By Peter, with some adjustments by Matthew'''
 		if target_path:
 			path = target_path
 		else:
@@ -83,6 +85,8 @@ class TxtFile(GenericFile):
 
 class CsvFile(GenericFile):
 	def read(self):
+		'''Updates self.contents with the actual data from the file at self.path'''
+		'''By Matthew'''
 		f = open(self.path, 'r')
 		self.contents = {}
 		lines = f.readlines()
@@ -106,6 +110,8 @@ class CsvFile(GenericFile):
 
 
 	def write(self):
+		'''Writes contents to the file at self.path'''
+		'''By Matthew'''
 		f = open(self.path, 'w')
 		ret = ''
 		for key, value in self.contents.items():
@@ -116,7 +122,8 @@ class CsvFile(GenericFile):
 
 class PdfFile(GenericFile):
 	def read(self):
-		# flow for reading pdfs from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html
+		'''Updates self.contents with the actual data from the file at self.path'''
+		'''By Matthew, adapted from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html'''
 		# store the entire pdf in data
 		self.data = pdfrw.PdfReader(self.path)
 		self.contents = {}
@@ -156,6 +163,8 @@ class PdfFile(GenericFile):
 						self.contents[key] = val
 	
 	def write(self):
+		'''Writes contents to the file at self.path'''
+		'''By Matthew, adapted from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html'''
 		# first, flush any changes in contents to data
 		# iterate over pages
 		for page in self.data.pages:
@@ -185,8 +194,9 @@ class PdfFile(GenericFile):
 class JsonFile(GenericFile):
 	pass
 
-# Dictionary for file types
+
 fileTypes = {
+	'''Dictionary for file extensions'''
 	"txt": TxtFile,
 	"csv": CsvFile,
 	"xlsx": ExcelFile,
