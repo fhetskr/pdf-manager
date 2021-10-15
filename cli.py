@@ -13,7 +13,7 @@ def main():
 	if cmd == 'fill':
 		src = fileTypes[args[2].split('.')[-1]](args[2])
 		src.read()
-		dest = src.convert(PdfFile, args[1])
+		dest = src.convert('pdf', args[1])
 		dest.write()
 
 if __name__ == '__main__':

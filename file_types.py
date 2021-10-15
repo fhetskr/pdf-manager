@@ -76,6 +76,29 @@ class TxtFile(GenericFile):
 	pass
 
 class CsvFile(GenericFile):
+	def read(self):
+		f = open(self.path, 'r')
+		self.contents = {}
+		lines = f.readlines()
+		for line in lines:
+			data = None
+			quotes = False
+			# handle values wrapped in quote marks (for commas in values)
+			if '","' in line:
+				data = line.split('","')
+				quotes = True
+			else:
+				data = line.split(',')
+			if len(data) > 2:
+				raise IOError('Input CSVs must have exactly two columns.')
+			if quotes:
+				# trim any remaining quote marks
+				self.contents[data[0][1:]] = data[1][:-2]
+			else:
+				self.contents[data[0]] = data[1]
+				
+
+
 	def write(self):
 		f = open(self.path, 'w')
 		ret = ''
@@ -87,7 +110,7 @@ class CsvFile(GenericFile):
 class PdfFile(GenericFile):
 	def read(self):
 		# flow for reading pdfs from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html
-		# store the entire pdf in base_data
+		# store the entire pdf in data
 		self.data = pdfrw.PdfReader(self.path)
 		self.contents = {}
 		# iterate over pages
@@ -98,7 +121,6 @@ class PdfFile(GenericFile):
 				# check that we're in a widget with a field key
 				if annot['/Subtype'] == '/Widget':
 					if annot['/T']:
-						print(annot)
 						key = annot['/T'][1:-1]
 						val = ''
 						# read the field value, if any
@@ -110,7 +132,6 @@ class PdfFile(GenericFile):
 						elif annot['/V']:
 							val = annot['/V'][1:-1]
 						self.contents[key] = val
-						print('%s,%s' % (key, val))
 				# ugly handling of edge cases in case a field is embedded entirely within the parent value
 				if annot['/Parent']:
 					print(annot['/Parent'])
@@ -126,7 +147,35 @@ class PdfFile(GenericFile):
 						elif annot['/V']:
 							val = annot['/V'][1:-1]
 						self.contents[key] = val
-						print('%s,%s' % (key, val))
+	
+	def write(self):
+		# first, flush any changes in contents to data
+		# iterate over pages
+		for page in self.data.pages:
+			annots = page['/Annots']
+			# then over annotations on that page
+			for annot in annots:
+				# check that we're in a widget with a field key
+				if annot['/Subtype'] == '/Widget':
+					if annot['/T']:
+						key = annot['/T'][1:-1]
+						if key in self.contents.keys():
+							if type(self.contents[key]) == bool:
+								# special case for boolean values (checkboxes, radio buttons)
+								if self.contents[key]:
+									annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Yes')))
+								else:
+									annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Off')))
+							else:
+								annot.update(pdfrw.PdfDict(V='{}'.format(self.contents[key])))
+								annot.update(pdfrw.PdfDict(AP=''))
+		# trick acrobat into thinking the fields are populated
+		self.data.Root.AcroForm.update(pdfrw.PdfDict(NeedAppearances=pdfrw.PdfObject('true')))
+		# and finally actually write
+		pdfrw.PdfWriter().write(self.path, self.data)
+
+
+
 
 class JsonFile(GenericFile):
 	pass
