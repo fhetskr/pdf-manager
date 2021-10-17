@@ -1,6 +1,7 @@
 import os
 import pdfrw
-
+from openpyxl import Workbook
+import json
 
 ### Internal data types
 
@@ -24,7 +25,7 @@ class GenericFile():
 		'''By Peter'''
 		# save path to self.path
 		self.path = path
-		
+		self.contents = {}
 		# get file extension
 		if len(path.split('.')) > 1:
 			self.extension = path.split('.')[-1]
@@ -192,7 +193,13 @@ class PdfFile(GenericFile):
 
 
 class JsonFile(GenericFile):
-	pass
+	def read(self):
+		with open(self.path) as f:
+			self.contents = json.load(f)
+
+	def write(self):
+		with open(self.path, 'w') as json_file:
+			json.dump(self.contents, json_file)
 
 
 fileTypes = {
