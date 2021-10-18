@@ -191,6 +191,27 @@ class PdfFile(GenericFile):
 		# and finally actually write
 		pdfrw.PdfWriter().write(self.path, self.data)
 
+	def write_ordered(self):
+		'''Version of write that writes values strictly in the order they appear'''
+		i = 0
+		# similar flow to write()
+		for page in self.data.pages:
+			annots = page['/Annots']
+			for annot in annots:
+				if annot['/Subtype'] == '/Widget':
+					if annot['/T']:
+						# logic changes here to account for order-based writing
+						if type(self.contents.values[i]) == bool:
+							if self.contents.values[i]:
+								annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Yes')))
+							else:
+								annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Off')))
+						else:
+							annot.update(pdfrw.PdfDict(V='{}'.format(self.contents.values[i])))
+							annot.update(pdfrw.PdfDict(AP=''))
+		self.data.Root.AcroForm.update(pdfrw.PdfDict(NeedAppearances=pdfrw.PdfObject('true')))
+		pdfrw.PdfWriter().write(self.path, self.data)
+
 
 class JsonFile(GenericFile):
 	def read(self):
