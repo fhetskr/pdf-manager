@@ -1,6 +1,6 @@
 import os
 import pdfrw
-from openpyxl import Workbook
+import openpyxl
 import json
 
 ### Internal data types
@@ -74,11 +74,41 @@ class GenericFile():
 
 
 ### Actual file types
-#TODO: Excel, plaintext, json
+#TODO: Excel, plaintext
 
+#Note: When doing error handling, make sure you write an exception that handles when a user has
+# the Excel file open while trying to read from it.
 class ExcelFile(GenericFile):
-	pass
+	# Reads data from a Excel file and sets the key value pairs into the contents variable
+	# By Rohit Ramakrishnan
+	def read(self):
+		workbook = openpyxl.load_workbook(self.path)
+		sheet = workbook.active
 
+		for i in range(1, sheet.max_row + 1):
+			for j in range(1, sheet.max_column + 1):
+				cell_row_data = sheet.cell(row=i, column=j)
+				cell_col_data = sheet.cell(row=i, column=j + 1)
+				self.contents[cell_row_data.value] = cell_col_data.value
+				break
+
+	# Takes data from the contents variable and writes it into a Excel file
+	# By Rohit Ramakrishnan
+	def write(self):
+		workbook = openpyxl.Workbook()
+		sheet = workbook.active
+		row_traversal = 1
+
+		for key, value in self.contents.items():
+			for j in range(1, 3):
+				cell_data = sheet.cell(row=row_traversal, column=j)
+				if j == 1:
+					cell_data.value = key
+				if j == 2:
+					cell_data.value = value
+			row_traversal += 1
+
+		workbook.save(self.path)
 
 class TxtFile(GenericFile):
 	pass
@@ -193,11 +223,17 @@ class PdfFile(GenericFile):
 
 
 class JsonFile(GenericFile):
+	# Reads data from a json file and sets the key value pairs into the contents variable
+	# By Rohit Ramakrishnan
 	def read(self):
 		with open(self.path) as f:
 			self.contents = json.load(f)
 
+	# Take data from the contents variable and writes it into a json file
+	# By Rohit Ramakrishnan
 	def write(self):
+		# Writes contents to the file at self.path
+		# By Rohit Ramakrishnan
 		with open(self.path, 'w') as json_file:
 			json.dump(self.contents, json_file)
 
