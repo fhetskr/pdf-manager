@@ -16,7 +16,10 @@ def main():
 		src = fileTypes[args[2].split('.')[-1]](args[2])
 		src.read()
 		dest = src.convert('pdf', args[1])
-		dest.write()
+		if '--ordered' in args or '-o' in args:
+			dest.write_ordered()
+		else:
+			dest.write()
 
 if __name__ == '__main__':
 	main()
