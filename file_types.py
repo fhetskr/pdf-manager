@@ -4,7 +4,10 @@ import openpyxl
 import json
 
 ### Internal data types
-
+### Credits:
+### Peter: GenericFile
+### Matthew: PdfFile, CsvFile, TxtFile, small part of GenericFile.convert(), GenericFile.convert_redirect()
+### Rohit: ExcelFile, JsonFile
 
 class OrderedDictionary():
 	# NB: I'm not sure we actually need to implement this -Peter
@@ -53,15 +56,36 @@ class GenericFile():
 			path = target_path
 		else:
 			# strip old extension if necessary
-			if self.extension:
+			if file_dict[self.path.split('.')[-1]] == self.__class__.__name__:
 				path = '.'.join(self.path.split('.')[:-1])
 			else:
 				path = self.path
 			# add new extension
 			path = '.'.join((path,target_type))
 		# create new file object and return it
-		new_file = fileTypes[target_type](path)
+		new_file = file_dict[target_type](path)
 		new_file.contents = self.contents
+		return new_file
+
+	def convert_redirect(self, target_type, target_path, redir_file):
+		if target_path:
+			path = target_path
+		else:
+			# strip old extension if necessary
+			if file_dict[self.path.split('.')[-1]] == self.__class__.__name__:
+				path = '.'.join(self.path.split('.')[:-1])
+			else:
+				path = self.path
+			# add new extension
+			path = '.'.join((path,target_type))
+		# create new file object and return it
+		new_file = file_dict[target_type](path)
+		redir_file.read_keys()
+		# transpose the keys, but only if the two files have equal key count
+		if len(self.contents.keys()) != len(redir_file.contents.keys()):
+			raise FileError("Key alias files must have exactly as many keys as the file being aliased.")
+		for i in range(0,len(self.contents.keys())):
+			new_file.contents[list(redir_file.contents)[i]] = self.contents[list(self.contents)[i]]
 		return new_file
 		
 	def verify(self):
@@ -74,7 +98,6 @@ class GenericFile():
 
 
 ### Actual file types
-#TODO: Excel, plaintext
 
 #Note: When doing error handling, make sure you write an exception that handles when a user has
 # the Excel file open while trying to read from it.
@@ -111,7 +134,19 @@ class ExcelFile(GenericFile):
 		workbook.save(self.path)
 
 class TxtFile(GenericFile):
-	pass
+	def read_keys(self):
+		f = open(self.path, 'r')
+		self.contents = {}
+		lines = f.read().splitlines()
+		for line in lines:
+			self.contents[line] = None
+		f.close()
+	
+	def write_keys(self):
+		f = open(self.path, 'w')
+		ret = '\n'.join(list(self.contents))
+		f.write(ret)
+		f.close()
 
 
 class CsvFile(GenericFile):
@@ -137,6 +172,7 @@ class CsvFile(GenericFile):
 				self.contents[data[0][1:]] = data[1][:-2]
 			else:
 				self.contents[data[0]] = data[1]
+		f.close()
 				
 
 
@@ -154,7 +190,7 @@ class CsvFile(GenericFile):
 class PdfFile(GenericFile):
 	def read(self):
 		'''Updates self.contents with the actual data from the file at self.path'''
-		'''By Matthew, adapted from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html'''
+		'''Adapted from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html'''
 		# store the entire pdf in data
 		self.data = pdfrw.PdfReader(self.path)
 		self.contents = {}
@@ -179,7 +215,6 @@ class PdfFile(GenericFile):
 						self.contents[key] = val
 				# ugly handling of edge cases in case a field is embedded entirely within the parent value
 				if annot['/Parent']:
-					print(annot['/Parent'])
 					if annot['/Parent']['/T']:
 						key = annot['/Parent']['/T'][1:-1]
 						val = ''
@@ -195,7 +230,7 @@ class PdfFile(GenericFile):
 	
 	def write(self):
 		'''Writes contents to the file at self.path'''
-		'''By Matthew, adapted from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html'''
+		'''Adapted from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html'''
 		# first, flush any changes in contents to data
 		# iterate over pages
 		for page in self.data.pages:
@@ -259,8 +294,8 @@ class JsonFile(GenericFile):
 			json.dump(self.contents, json_file)
 
 
-fileTypes = {
-	'''Dictionary for file extensions'''
+'''Dictionary for file extensions'''
+file_dict = {
 	"txt": TxtFile,
 	"csv": CsvFile,
 	"xlsx": ExcelFile,
