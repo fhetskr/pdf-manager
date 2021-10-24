@@ -165,16 +165,12 @@ class CsvFile(GenericFile):
 				quotes = True
 			else:
 				data = line.split(',')
-			if len(data) > 2:
-				raise FileError('Input CSVs must have exactly two columns.')
 			if quotes:
 				# trim any remaining quote marks
 				self.contents[data[0][1:]] = data[1][:-2]
 			else:
 				self.contents[data[0]] = data[1]
 		f.close()
-				
-
 
 	def write(self):
 		'''Writes contents to the file at self.path'''
@@ -185,6 +181,19 @@ class CsvFile(GenericFile):
 			ret += '"%s","%s"\n' % (key, value)
 		f.write(ret)
 		f.close()
+
+	def validate(self):
+		lines = open(self.path, 'r').read().splitlines()
+		for line in lines:
+			split = None
+			if '","' in line:
+				split = line.split('","')
+			else:
+				split = line.split(',')
+			if len(split) > 2:
+				return False
+		return True
+
 
 
 class PdfFile(GenericFile):
