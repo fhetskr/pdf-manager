@@ -190,7 +190,7 @@ class CsvFile(GenericFile):
 				split = line.split('","')
 			else:
 				split = line.split(',')
-			if len(split) > 2:
+			if len(split) != 2:
 				return False
 		return True
 
