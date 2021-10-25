@@ -184,6 +184,7 @@ class CsvFile(GenericFile):
 
 	def validate(self):
 		lines = open(self.path, 'r').read().splitlines()
+		keys = []
 		for line in lines:
 			split = None
 			if '","' in line:
@@ -192,6 +193,9 @@ class CsvFile(GenericFile):
 				split = line.split(',')
 			if len(split) != 2:
 				return False
+			if split[0] in keys:
+				return False
+			keys.append(split[0])
 		return True
 
 
