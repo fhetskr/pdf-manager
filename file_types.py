@@ -34,7 +34,8 @@ class GenericFile():
 			self.extension = path.split('.')[-1]
 		
 		if os.path.isfile(path):
-			self.verify()
+			if not self.verify():
+				raise FileError('Malformed input')
 			self.read()
 		else:
 			# create an empty file if none exists.
