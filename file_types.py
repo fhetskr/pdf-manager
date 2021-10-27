@@ -142,7 +142,7 @@ class ExcelFile(GenericFile):
 
 		workbook.save(self.path)
 
-	def validate(self):
+	def verify(self):
 		workbook = openpyxl.load_workbook(self.path)
 		sheet = workbook.active
 
@@ -207,7 +207,7 @@ class CsvFile(GenericFile):
 		f.write(ret)
 		f.close()
 
-	def validate(self):
+	def verify(self):
 		lines = open(self.path, 'r').read().splitlines()
 		keys = []
 		for line in lines:
