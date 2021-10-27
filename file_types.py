@@ -19,6 +19,14 @@ class FileError(Exception):
 	'''Exception for invalid files'''
 	pass
 
+class InvalidKeyPairFormat(Exception):
+	# Exception when there are more than a key and value pair format
+	# within a file
+	pass
+
+class KeyRepetition(Exception):
+	# Exception when there are multiple of the same key
+	pass
 
 # A placeholder file type
 class GenericFile():
@@ -132,6 +140,22 @@ class ExcelFile(GenericFile):
 			row_traversal += 1
 
 		workbook.save(self.path)
+
+	def validate(self):
+		workbook = openpyxl.load_workbook(self.path)
+		sheet = workbook.active
+
+		if sheet.max_column != 2:
+			raise InvalidKeyPairFormat
+		else:
+			key_list = []
+			for i in range(1, sheet.max_row + 1):
+				cell_data = sheet.cell(row=i, column=1)
+				if cell_data.value in key_list:
+					raise KeyRepetition
+				else:
+					key_list.append(cell_data.value)
+		return True
 
 class TxtFile(GenericFile):
 	def read_keys(self):
