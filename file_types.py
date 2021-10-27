@@ -217,9 +217,9 @@ class CsvFile(GenericFile):
 			else:
 				split = line.split(',')
 			if len(split) != 2:
-				return False
+				raise InvalidKeyPairFormat
 			if split[0] in keys:
-				return False
+				raise KeyRepetition
 			keys.append(split[0])
 		return True
 
