@@ -76,7 +76,8 @@ def handle_convert(old_file, new_filetype, new_file):
 
         if(not old_filetype in file_dict):
             raise Exception("The file type isn't operable.")
-
+        
+        print("Old file {old_file}".format(old_file=old_file))
         old_file_inst = file_dict[old_filetype](old_file)
         new_file_inst = old_file_inst.convert(new_filetype, new_file)
         new_file_inst.write()

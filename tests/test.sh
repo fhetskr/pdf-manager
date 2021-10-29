@@ -45,6 +45,6 @@ then
 	rm ../test-files/result-one.csv
 	echo "Test five passed."
 else
-	echo "Test five ailed."
+	echo "Test five failed."
 fi
 
