@@ -28,6 +28,10 @@ class KeyRepetition(Exception):
 	# Exception when there are multiple of the same key
 	pass
 
+class NonexistentPdfFile(Exception):
+	# Exception when a PDF being filled does not exist
+	pass
+
 # A placeholder file type
 class GenericFile():
 	
@@ -270,6 +274,9 @@ class PdfFile(GenericFile):
 	def write(self):
 		'''Writes contents to the file at self.path'''
 		'''Adapted from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html'''
+		# sanity check: data exists if read occurred
+		if 'data' not in locals():
+			raise NonexistentPdfFile
 		# first, flush any changes in contents to data
 		# iterate over pages
 		for page in self.data.pages:
