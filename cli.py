@@ -1,5 +1,6 @@
 import argparse
 import filetype
+import merge_break as mb
 from file_types import *
 
 def main():
@@ -11,13 +12,13 @@ def main():
                 help="""Convert the file given to the specified filetype.
                 Output the converted file with the given name.""", 
                 metavar=('oldfile', 'filetype', 'newfile'))
-        parser.add_argument('--append', '-a', action='extend', nargs=3,
-                help="Combine the two pdfs and output them into the new pdf.",
-                metavar=('fileone', 'filetwo', 'newfile'))
-        parser.add_argument('--split', '-s', action='extend', nargs=3,
+        parser.add_argument('--append', '-a', action='extend', nargs='+',
+                help="Combine pdfs and output them into one new pdf.",
+                metavar=('newpath', 'files'))
+        parser.add_argument('--split', '-s', action='extend', nargs='+',
                 help="""Split the specified PDF as the given page.
                 Output the converted file with the given name.""",
-                metavar=('oldfile', 'page', 'newfile'))
+                metavar=('oldfile', 'pages'))
         parser.add_argument('--email', '-e', action='extend', nargs=2,
                 help="Email the given file to the specified email address.",
                 metavar=('file', 'email'))
@@ -36,7 +37,7 @@ def main():
             # Print out helpful debugging information.
             print("Below is a short debug" +
                 "(are the arguments right?)")
-            handle_debug()
+            handle_debug(args)
             did_something = True
         if(args.convert != None):
             # Tell the user what's happening.
@@ -47,10 +48,10 @@ def main():
             handle_convert(args.convert[0], args.convert[1], args.convert[2])
             did_something = True
         if(args.append != None):
-            handle_append(args.append[0], args.append[1], args.append[2])
+            handle_append(args.append[0], *(args.append[1:]))
             did_something = True
         if(args.split != None):
-            handle_split(args.split[0], args.split[1], args.split[2])
+            handle_split(args.split[0], *(args.split[1:]))
             did_something = True
         if(args.email != None):
             handle_email(args.split[0], args.split[1])
@@ -60,7 +61,7 @@ def main():
             parser.print_help()
 
 
-def handle_debug():
+def handle_debug(args):
         print(args)
 
 def handle_convert(old_file, new_filetype, new_file):
@@ -84,23 +85,24 @@ def handle_convert(old_file, new_filetype, new_file):
     else:
         raise Exception("The filetype {new_filetype} isn't allowed!".format(new_filetype=new_filetype))
 
-def handle_append(fileone, filetwo, newfile):
-    ext_one = get_extension(fileone)
-    ext_two = get_extension(filetwo)
-    if(ext_one == ext_two and ext_one == "pdf"):
-        new_file_inst = append(ext_one, ext_two, newfile)
-        new_file_inst.write()
-    else:
-        raise Exception("You can only merge PDF files!")
+def handle_append(new_path, *files):
+    # ensure all files are pdfs
+    if get_extension(new_path).lower() != 'pdf':
+        raise Exception("Given path must be to a pdf file!")
+    for file in files:
+        if get_extension(file).lower() != 'pdf':
+            raise Exception("Only pdf files may be merged!")
+    mb.append(new_path, *files)
 
-def handle_split(fileone, pageno, newfile):
-    ext_one = get_extension(fileone)
-    ext_two = get_extension(filetwo)
-    if(ext_one == ext_two and ext_one == "pdf"):
-        new_file_inst = append(ext_one, ext_two, newfile)
-        new_file_inst.write()
-    else:
-        raise Exception("You can only split PDF files!")
+def handle_split(oldfile, *pages):
+    if get_extension(oldfile).lower() != 'pdf':
+        raise Exception("Only pdf files may be split!")
+    new_file_names = []
+    c = 0
+    for i in range(len(pages) + 1):
+        c += 1
+        new_file_names.append('{}_part_{}.pdf'.format(oldfile[:-4], c))
+    mb.split(oldfile, [int(p) for p in pages], *new_file_names)
 
 
 def handle_email(fileone, email):
