@@ -38,8 +38,7 @@
                     <property name="label" translatable="yes">Convert</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <signal name="activate" handler="convert-button_activate_cb" swapped="no"/>
+		    <property name="receives_default">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -82,7 +81,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFileChooserButton">
+                  <object class="GtkFileChooserButton" id="convert-old-file-chooser">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="title" translatable="yes"/>
@@ -93,7 +92,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxText">
+                  <object class="GtkComboBoxText" id="convert-filetype-combobox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <items>
@@ -110,7 +109,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry">
+                  <object class="GtkEntry" id="convert-path-entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                   </object>
@@ -267,7 +266,7 @@
                 <property name="row_homogeneous">True</property>
                 <property name="column_homogeneous">True</property>
                 <child>
-                  <object class="GtkFileChooserButton">
+                  <object class="GtkFileChooserButton" id="split-file-chooser">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="title" translatable="yes"/>
@@ -278,7 +277,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry">
+                  <object class="GtkEntry" id="split-page-number-entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                   </object>
@@ -288,7 +287,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry">
+                  <object class="GtkEntry" id="split-new-file-entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                   </object>
@@ -331,8 +330,8 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton">
-                    <property name="label" translatable="yes">button</property>
+                  <object class="GtkButton" id="split-button">
+                    <property name="label" translatable="yes">Split</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -378,7 +377,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="email-textbox">
+                  <object class="GtkEntry" id="email-entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                   </object>

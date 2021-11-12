@@ -165,7 +165,7 @@ class TxtFile(GenericFile):
 		self.contents = {}
 		lines = f.read().splitlines()
 		for line in lines:
-			self.contents[line] = None
+		    self.contents[line] = None
 		f.close()
 	
 	def write_keys(self):
@@ -173,6 +173,9 @@ class TxtFile(GenericFile):
 		ret = '\n'.join(list(self.contents))
 		f.write(ret)
 		f.close()
+
+	def read(self):
+		self.read_keys()
 
 
 class CsvFile(GenericFile):
