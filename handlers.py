@@ -16,7 +16,7 @@ def handle_convert(old_file, new_filetype, new_file):
         raise file_types.FileError("The new file path must be input.")
 
     # If we can convert to what the user is requesting,
-    if(new_filetype in file_dict):
+    if(new_filetype in file_types.file_dict):
         # Attempt to guess the FileType of the old file. 
         # If it has no extension AND the library can't do it, 
         # the user will provide an override.
@@ -25,10 +25,11 @@ def handle_convert(old_file, new_filetype, new_file):
         if(old_filetype == None):
             raise file_types.FileError("Cannot deduce the type of the first argument.")
 
-        if(not old_filetype in file_dict):
+        if(not old_filetype in file_types.file_dict):
             raise file_types.FileError("The file type isn't operable.")
         
-        old_file_inst = file_dict[old_filetype](old_file)
+        old_file_inst = file_types.file_dict[old_filetype](old_file)
+        old_file_inst.read()
         new_file_inst = old_file_inst.convert(new_filetype, new_file)
         new_file_inst.write()
     else:
