@@ -1,9 +1,20 @@
-from file_types import *
+import file_types
+import filetype
+import merge_break as mb
 
 def handle_debug(args):
         print(args)
 
 def handle_convert(old_file, new_filetype, new_file):
+    if(old_file == None):
+        raise file_types.FileError("The file to convert must be input.")
+
+    if(new_filetype == None):
+        raise file_types.FileError("The filetype must be something.")
+
+    if(new_file == None):
+        raise file_types.FileError("The new file path must be input.")
+
     # If we can convert to what the user is requesting,
     if(new_filetype in file_dict):
         # Attempt to guess the FileType of the old file. 
@@ -21,33 +32,56 @@ def handle_convert(old_file, new_filetype, new_file):
         new_file_inst = old_file_inst.convert(new_filetype, new_file)
         new_file_inst.write()
     else:
-        raise FileError("The filetype {new_filetype} isn't allowed!".format(new_filetype=new_filetype))
+        raise file_types.FileError("The filetype {new_filetype} isn't allowed!".format(new_filetype=new_filetype))
 
-def handle_append(fileone, filetwo, newfile):
-    ext_one = get_extension(fileone)
-    ext_two = get_extension(filetwo)
-    if(ext_one == ext_two and ext_one == "pdf"):
-        new_file_inst = append(ext_one, ext_two, newfile)
-        new_file_inst.write()
-    else:
-        raise FileTypes.FileError("You can only merge PDF files!")
+def handle_append(new_path, *files):
+    if(new_path == None):
+        raise Exception("The new path must be entered.")
 
-def handle_split(fileone, pageno, newfile):
-    ext_one = get_extension(fileone)
-    ext_two = get_extension(filetwo)
-    if(ext_one == ext_two and ext_one == "pdf"):
-        new_file_inst = append(ext_one, ext_two, newfile)
-        new_file_inst.write()
-    else:
-        raise FileTypes.FileError("You can only split PDF files!")
+    if(files == None):
+        raise Exception("There must be files to split.")
+
+    # ensure all files are pdfs
+    if get_extension(new_path) == None or get_extension(new_path).lower() != 'pdf':
+        raise Exception("Given path must be to a PDF file!")
+    for file in files:
+        if get_extension(file) == None or get_extension(file).lower() != 'pdf':
+            raise Exception("Only PDF files may be merged!")
+    mb.append(new_path, *files)
+
+
+def handle_split(oldfile, *pages):
+    if oldfile == None:
+        raise Exception("There must be a file to split.")
+
+    if pages == None:
+        raise Exception("There must be pages to split the file by.")
+
+    if get_extension(new_path != None) and get_extension(oldfile).lower() != 'pdf':
+        raise Exception("Only PDF files may be split!")
+    new_file_names = []
+    c = 0
+    for i in range(len(pages) + 1):
+        c += 1
+        new_file_names.append('{}_part_{}.pdf'.format(oldfile[:-4], c))
+    mb.split(oldfile, [int(p) for p in pages], *new_file_names)
 
 
 def handle_email(fileone, email):
+    if fileone == None:
+        raise Exception("There must be a file to e-mail")
+
+    if email == None:
+        raise Exception("There must be an e-mail to send a file to.")
+
     result = send(fileone, email)
     if(result == False):
         raise Exception("E-mailing failed.")
 
 def get_extension(filepath):
+    if(filepath == None):
+        return None
+
     # Decompose the path into sections and get the last section.
     names = filepath.split("/")
     split = names[len(names) - 1].split(".")

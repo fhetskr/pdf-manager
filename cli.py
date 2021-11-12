@@ -1,5 +1,6 @@
 import argparse
 import filetype
+import merge_break as mb
 from file_types import *
 import handlers
 
@@ -12,13 +13,13 @@ def main():
                 help="""Convert the file given to the specified filetype.
                 Output the converted file with the given name.""", 
                 metavar=('oldfile', 'filetype', 'newfile'))
-        parser.add_argument('--append', '-a', action='extend', nargs=3,
-                help="Combine the two pdfs and output them into the new pdf.",
-                metavar=('fileone', 'filetwo', 'newfile'))
-        parser.add_argument('--split', '-s', action='extend', nargs=3,
+        parser.add_argument('--append', '-a', action='extend', nargs='+',
+                help="Combine pdfs and output them into one new pdf.",
+                metavar=('newpath', 'files'))
+        parser.add_argument('--split', '-s', action='extend', nargs='+',
                 help="""Split the specified PDF as the given page.
                 Output the converted file with the given name.""",
-                metavar=('oldfile', 'page', 'newfile'))
+                metavar=('oldfile', 'pages'))
         parser.add_argument('--email', '-e', action='extend', nargs=2,
                 help="Email the given file to the specified email address.",
                 metavar=('file', 'email'))
@@ -38,6 +39,7 @@ def main():
             print("Below is a short debug" +
                 "(are the arguments right?)")
             handlers.handle_debug(args)
+            handle_debug(args)
             did_something = True
         if(args.convert != None):
             # Tell the user what's happening.
@@ -48,10 +50,10 @@ def main():
             handlers.handle_convert(args.convert[0], args.convert[1], args.convert[2])
             did_something = True
         if(args.append != None):
-            handlers.handle_append(args.append[0], args.append[1], args.append[2])
+            handlers.handle_append(args.append[0], *(args.append[1:]))
             did_something = True
         if(args.split != None):
-            handlers.handle_split(args.split[0], args.split[1], args.split[2])
+            handlers.handle_split(args.split[0], *(args.split[1:]))
             did_something = True
         if(args.email != None):
             handlers.handle_email(args.split[0], args.split[1])
@@ -59,7 +61,6 @@ def main():
 
         if(not did_something):
             parser.print_help()
-
 
 if __name__ == '__main__':
     main()
