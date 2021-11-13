@@ -12,8 +12,8 @@ def send(file, recipient):
 	# TODO: implement this
 	subject = "PDF Manager File Conversion"
 	body = "Thank you for using the PDF Manager software! The file you had converted is converted is attached to this " \
-		   "email. Please do not reply to this email as it's not monitored. If you have any questions or concerns about " \
-		   "your please contact us at pdf.manager.help@gmail.com" \
+		   "email. Please do not reply to this email as it's not monitored. If you have any questions or concerns " \
+		   "please contact us at pdf.manager.help@gmail.com"
 	EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
 	EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
@@ -41,3 +41,6 @@ def send(file, recipient):
 	with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
 		server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
 		server.sendmail(EMAIL_ADDRESS, recipient, text)
+
+#When testing this function enter your email to the second parameter
+#send("test-files/test-one.txt", "")
