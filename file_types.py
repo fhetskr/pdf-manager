@@ -22,6 +22,10 @@ class KeyRepetition(Exception):
 	# Exception when there are multiple of the same key
 	pass
 
+class NonexistentPdfFile(Exception):
+	# Exception when a PDF being filled does not exist
+	pass
+
 # A placeholder file type
 class GenericFile():
 	
@@ -270,6 +274,9 @@ class PdfFile(GenericFile):
 	def write(self):
 		'''Writes contents to the file at self.path'''
 		'''Adapted from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html'''
+		# sanity check: data exists if read occurred
+		if self.data is None:
+			raise NonexistentPdfFile
 		# first, flush any changes in contents to data
 		# iterate over pages
 		for page in self.data.pages:
@@ -281,9 +288,9 @@ class PdfFile(GenericFile):
 					if annot['/T']:
 						key = annot['/T'][1:-1]
 						if key in self.contents.keys():
-							if type(self.contents[key]) == bool:
+							if type(self.contents[key]) == bool or self.contents[key] == 'True' or self.contents[key] == 'False':
 								# special case for boolean values (checkboxes, radio buttons)
-								if self.contents[key]:
+								if self.contents[key] or self.contents[key] == 'True':
 									annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Yes')))
 								else:
 									annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Off')))
@@ -298,6 +305,8 @@ class PdfFile(GenericFile):
 	def write_ordered(self):
 		'''Version of write that writes values strictly in the order they appear'''
 		i = 0
+		if self.data is None:
+			raise NonexistentPdfFile
 		# similar flow to write()
 		for page in self.data.pages:
 			annots = page['/Annots']
