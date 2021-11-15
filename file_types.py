@@ -305,6 +305,8 @@ class PdfFile(GenericFile):
 	def write_ordered(self):
 		'''Version of write that writes values strictly in the order they appear'''
 		i = 0
+		if 'data' not in locals():
+			raise NonexistentPdfFile
 		# similar flow to write()
 		for page in self.data.pages:
 			annots = page['/Annots']
