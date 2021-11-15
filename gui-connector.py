@@ -19,7 +19,7 @@ def load_window():
     builder.add_from_file("gui-file.glade")
 
     window = builder.get_object("topwindow")
-    window.set_title("PDF Filler")
+    window.set_title("PDF Manager")
 
     # Add all relevant handlers.
     window.connect("destroy", Gtk.main_quit)
@@ -48,8 +48,11 @@ def handle_append_button(button):
 
 def handle_split_button(button):
     file_to_split = builder.get_object("split-file-chooser").get_filename()
-    page_number = builder.get_object("split-page-number-entry").get_text()
-    handlers.handle_split(file_to_split, page_number)
+    raw_page_numbers = builder.get_object("split-page-number-entry").get_text()
+    page_numbers = None
+    if(raw_page_numbers != None):
+        page_numbers = raw_page_numbers.split(',')
+    handlers.handle_split(file_to_split, *page_numbers)
 
 def handle_email_button(button):
     file_to_email = builder.get_object("email-file-chooser").get_filename()

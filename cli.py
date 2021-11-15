@@ -17,8 +17,8 @@ def main():
                 help="Combine pdfs and output them into one new pdf.",
                 metavar=('newpath', 'files'))
         parser.add_argument('--split', '-s', action='extend', nargs='+',
-                help="""Split the specified PDF as the given page.
-                Output the converted file with the given name.""",
+                help="""Split the specified PDF at the given pages.
+                Output the converted files with automatically generated names.""",
                 metavar=('oldfile', 'pages'))
         parser.add_argument('--email', '-e', action='extend', nargs=2,
                 help="Email the given file to the specified email address.",
@@ -39,7 +39,6 @@ def main():
             print("Below is a short debug" +
                 "(are the arguments right?)")
             handlers.handle_debug(args)
-            handle_debug(args)
             did_something = True
         if(args.convert != None):
             # Tell the user what's happening.

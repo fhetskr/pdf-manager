@@ -9,12 +9,6 @@ import json
 ### Matthew: PdfFile, CsvFile, TxtFile, small part of GenericFile.convert(), GenericFile.convert_redirect()
 ### Rohit: ExcelFile, JsonFile
 
-class OrderedDictionary():
-	# NB: I'm not sure we actually need to implement this -Peter
-	# Edit: nvm I think we probably will have to
-	pass
-
-
 class FileError(Exception):
 	'''Exception for invalid files'''
 	pass
@@ -99,7 +93,7 @@ class GenericFile():
 		
 	def verify(self):
 		'''Verify that self.path points to a file of the appropriate format'''
-                # Ensure that filetypes that do not implement this method automatically pass (i.e. TxtFile for quick testing purposes).
+                # Ensure that filetypes that do not implement this method automatically pass (i.e. TxtFile).
 		return True
 
 	def delete(self):
@@ -176,6 +170,9 @@ class TxtFile(GenericFile):
 
 	def read(self):
 		self.read_keys()
+
+	def write(self):
+		self.write_keys()
 
 
 class CsvFile(GenericFile):
@@ -335,12 +332,13 @@ class JsonFile(GenericFile):
 		with open(self.path, 'w') as json_file:
 			json.dump(self.contents, json_file)
 
-    def verify(self):
-        with open(self.path) as f:
-            data = json.load(f)
-        for value in data.values():
-            if isinstance(value,list) == True or isinstance(value,dict) == True:
-                raise InvalidKeyPairFormat
+	def verify(self):
+		with open(self.path) as f:
+			data = json.load(f)
+			for value in data.values():
+				if isinstance(value,list) == True or isinstance(value,dict) == True:
+					raise InvalidKeyPairFormat
+		return True
 
 '''Dictionary for file extensions'''
 file_dict = {

@@ -1,0 +1,9 @@
+
+alpha
+newline
+beta
+gamma\n
+delta
+epsilon
+theta
+omicron
