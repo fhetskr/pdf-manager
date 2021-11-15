@@ -296,7 +296,21 @@ class PdfFile(GenericFile):
 									annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Off')))
 							else:
 								annot.update(pdfrw.PdfDict(V='{}'.format(self.contents[key])))
-								annot.update(pdfrw.PdfDict(AP=''))
+								annot.update(pdfrw.PdfDict(AS=''))
+				# ugly handling of edge cases in case a field is embedded entirely within the parent value
+				if annot['/Parent']:
+					if annot['/Parent']['/T']:
+						key = annot['/Parent']['/T'][1:-1]
+						if key in self.contents.keys():
+							if type(self.contents[key]) == bool or self.contents[key] == 'True' or self.contents[key] == 'False':
+								# special case for boolean values (checkboxes, radio buttons)
+								if self.contents[key] or self.contents[key] == 'True':
+									annot['/Parent'].update(pdfrw.PdfDict(AS=pdfrw.PdfName('Yes')))
+								else:
+									annot['/Parent'].update(pdfrw.PdfDict(AS=pdfrw.PdfName('Off')))
+							else:
+								annot['/Parent'].update(pdfrw.PdfDict(V='{}'.format(self.contents[key])))
+								annot['/Parent'].update(pdfrw.PdfDict(AS=''))
 		# trick acrobat into thinking the fields are populated
 		self.data.Root.AcroForm.update(pdfrw.PdfDict(NeedAppearances=pdfrw.PdfObject('true')))
 		# and finally actually write
@@ -314,7 +328,7 @@ class PdfFile(GenericFile):
 				if annot['/Subtype'] == '/Widget':
 					if annot['/T']:
 						# logic changes here to account for order-based writing
-						if type(self.contents.values[i]) == bool:
+						if type(self.contents.values[i]) == bool or self.contents[key] == 'True' or self.contents[key] == 'False':
 							if self.contents.values[i]:
 								annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Yes')))
 							else:
@@ -322,6 +336,20 @@ class PdfFile(GenericFile):
 						else:
 							annot.update(pdfrw.PdfDict(V='{}'.format(self.contents.values[i])))
 							annot.update(pdfrw.PdfDict(AP=''))
+				# ugly handling of edge cases in case a field is embedded entirely within the parent value
+				if annot['/Parent']:
+					if annot['/Parent']['/T']:
+						key = annot['/Parent']['/T'][1:-1]
+						if key in self.contents.keys():
+							if type(self.contents[key]) == bool or self.contents[key] == 'True' or self.contents[key] == 'False':
+								# special case for boolean values (checkboxes, radio buttons)
+								if self.contents[key]:
+									annot['/Parent'].update(pdfrw.PdfDict(AS=pdfrw.PdfName('Yes')))
+								else:
+									annot['/Parent'].update(pdfrw.PdfDict(AS=pdfrw.PdfName('Off')))
+							else:
+								annot['/Parent'].update(pdfrw.PdfDict(V='{}'.format(self.contents[key])))
+								annot['/Parent'].update(pdfrw.PdfDict(AP=''))
 		self.data.Root.AcroForm.update(pdfrw.PdfDict(NeedAppearances=pdfrw.PdfObject('true')))
 		pdfrw.PdfWriter().write(self.path, self.data)
 
