@@ -275,7 +275,7 @@ class PdfFile(GenericFile):
 		'''Writes contents to the file at self.path'''
 		'''Adapted from https://akdux.com/python/2020/10/31/python-fill-pdf-files.html'''
 		# sanity check: data exists if read occurred
-		if 'data' not in locals():
+		if self.data is None:
 			raise NonexistentPdfFile
 		# first, flush any changes in contents to data
 		# iterate over pages
@@ -305,7 +305,7 @@ class PdfFile(GenericFile):
 	def write_ordered(self):
 		'''Version of write that writes values strictly in the order they appear'''
 		i = 0
-		if 'data' not in locals():
+		if self.data is None:
 			raise NonexistentPdfFile
 		# similar flow to write()
 		for page in self.data.pages:
