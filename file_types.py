@@ -332,12 +332,13 @@ class JsonFile(GenericFile):
 		with open(self.path, 'w') as json_file:
 			json.dump(self.contents, json_file)
 
-    def verify(self):
-        with open(self.path) as f:
-            data = json.load(f)
-        for value in data.values():
-            if isinstance(value,list) == True or isinstance(value,dict) == True:
-                raise InvalidKeyPairFormat
+	def verify(self):
+		with open(self.path) as f:
+			data = json.load(f)
+			for value in data.values():
+				if isinstance(value,list) == True or isinstance(value,dict) == True:
+					raise InvalidKeyPairFormat
+		return True
 
 '''Dictionary for file extensions'''
 file_dict = {
