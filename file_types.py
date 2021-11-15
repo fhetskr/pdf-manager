@@ -288,9 +288,9 @@ class PdfFile(GenericFile):
 					if annot['/T']:
 						key = annot['/T'][1:-1]
 						if key in self.contents.keys():
-							if type(self.contents[key]) == bool:
+							if type(self.contents[key]) == bool or self.contents[key] == 'True' or self.contents[key] == 'False':
 								# special case for boolean values (checkboxes, radio buttons)
-								if self.contents[key]:
+								if self.contents[key] or self.contents[key] == 'True':
 									annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Yes')))
 								else:
 									annot.update(pdfrw.PdfDict(AS=pdfrw.PdfName('Off')))
