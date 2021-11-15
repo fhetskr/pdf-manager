@@ -1,7 +1,6 @@
 import pdfrw
 import file_types as ft
 
-
 def append(new_path, *file_paths):
 	'''
 	Merges an arbitrary number of files together.

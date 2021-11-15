@@ -3,7 +3,7 @@ import filetype
 import merge_break as mb
 
 def handle_debug(args):
-        print(args)
+    print(args)
 
 def handle_convert(old_file, new_filetype, new_file):
     if(old_file == None):
@@ -40,7 +40,7 @@ def handle_append(new_path, *files):
         raise Exception("The new path must be entered.")
 
     if(files == None):
-        raise Exception("There must be files to split.")
+        raise Exception("There must be files to append.")
 
     # ensure all files are pdfs
     if get_extension(new_path) == None or get_extension(new_path).lower() != 'pdf':
@@ -58,8 +58,9 @@ def handle_split(oldfile, *pages):
     if pages == None:
         raise Exception("There must be pages to split the file by.")
 
-    if get_extension(new_path != None) and get_extension(oldfile).lower() != 'pdf':
+    if get_extension(oldfile) != None and get_extension(oldfile).lower() != 'pdf':
         raise Exception("Only PDF files may be split!")
+
     new_file_names = []
     c = 0
     for i in range(len(pages) + 1):
