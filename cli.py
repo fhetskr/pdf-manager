@@ -16,7 +16,7 @@ def main():
         parser.add_argument('--append', '-a', action='extend', nargs='+',
                 help="Combine pdfs and output them into one new pdf.",
                 metavar=('newpath', 'files'))
-        parser.add_argument('--split', '-s', action='extend', nargs=2,
+        parser.add_argument('--split', '-s', action='extend', nargs='+',
                 help="""Split the specified PDF at the given pages.
                 Output the converted files with automatically generated names.""",
                 metavar=('oldfile', 'pages'))
