@@ -55,7 +55,7 @@ def main():
             handlers.handle_split(args.split[0], *(args.split[1:]))
             did_something = True
         if(args.email != None):
-            handlers.handle_email(args.split[0], args.split[1])
+            handlers.handle_email(args.email[0], args.email[1])
             did_something = True
 
         if(not did_something):

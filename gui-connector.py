@@ -56,7 +56,7 @@ def handle_split_button(button):
 
 def handle_email_button(button):
     file_to_email = builder.get_object("email-file-chooser").get_filename()
-    email = builder.get_object("email-entry")
+    email = builder.get_object("email-entry").get_text()
     handlers.handle_email(file_to_email, email)
 
 if __name__ == '__main__':

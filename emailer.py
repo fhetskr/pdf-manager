@@ -18,6 +18,8 @@ def send(file, recipient):
 
 		EMAIL_ADDRESS = email_credential_container[0]
 		EMAIL_PASSWORD = email_credential_container[1]
+		print(EMAIL_ADDRESS)
+		print(EMAIL_PASSWORD)
 
 		message = MIMEMultipart()
 		message["From"] = EMAIL_ADDRESS
@@ -44,5 +46,6 @@ def send(file, recipient):
 			server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
 			server.sendmail(EMAIL_ADDRESS, recipient, text)
 		return True
-	except:
+	except Exception as e:
+		print(e)
 		return False

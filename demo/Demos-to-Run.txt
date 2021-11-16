@@ -1,0 +1,16 @@
+Conversion Demos
+1) Fill a PDF (Conversion from Excel document to a PDF) - fill-test-pdf-three.xlsx to test-three.pdf
+2) Conversion from a text file to an Excel Document - test-one.txt to result.xlsx
+****3) CSV to PDF - fill.csv to pathological.pdf
+4) PDF to JSON - expected-four.pdf to result.json
+5) JSON to CSV - jsonfile3.json to result.csv
+
+Appending Demos
+1) Append pathological.pdf to expected-four.pdf.
+2) Append test-three to itself.
+
+Split Demos
+1) Append the above two to each other and then split them at page 1.
+
+Email Demos
+1) Email pathological to Seth.
