@@ -1,6 +1,7 @@
 import file_types
 import filetype
 import merge_break as mb
+import emailer
 
 def handle_debug(args):
     print(args)
@@ -76,7 +77,7 @@ def handle_email(fileone, email):
     if email == None:
         raise Exception("There must be an e-mail to send a file to.")
 
-    result = send(fileone, email)
+    result = emailer.send(fileone, email)
     if(result == False):
         raise Exception("E-mailing failed.")
 
